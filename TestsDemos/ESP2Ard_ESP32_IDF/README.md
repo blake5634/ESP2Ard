@@ -1,11 +1,12 @@
+(This is adapted from the official Espressif example `wifi/scan`)
+
 | Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-S2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- | -------- | -------- |
 
 # Wi-Fi Scan Example
+ 
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
-
-This example shows how to scan for available set of APs.
+This example shows how to scan your wifi environment for available set of APs.
 
 ## How to use example
 
