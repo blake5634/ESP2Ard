@@ -7,7 +7,7 @@ directory. (Do not copy the file ESP2Ard.c (which is used only for ESP32)).
 
 4) In the Arduino platform, open `ESP2Ard_Ard_AIDE.ino`
 
-5) Select the right board and port for your Arduino setup.
+5) Select the proper board and port for your Arduino setup.
 
 3) You should see 3 code tabs. Edit `ESP2Ard.h` to uncomment the  `#define` for
 
@@ -21,14 +21,14 @@ directory. (Do not copy the file ESP2Ard.c (which is used only for ESP32)).
 ```
 ) so you are selecting ONLY the Arduino on Arduino IDE,
 
-4) Choose which type of Arduino serial port:
+4) Choose which type of Arduino serial port you will use:
 
 ```
 #define ARDUINO_SW_SERIAL
 //#define ARDUINO_HW_SERIAL
 ```
 
-(note: no code exists yet for Arduino hardware serial ports. Any
+(note: no `ESP2Ard` code exists yet for Arduino hardware serial ports. Any
 Arduino can use software serial ports on free I/O pins.
 Arduino Uno can only use ARDUINO_SW_SERIAL because it's one hardware port is
 dedicated to USB, but some other Arduino models have open hardware serial ports).
@@ -36,9 +36,10 @@ dedicated to USB, but some other Arduino models have open hardware serial ports)
 5) Set serial communication parameters (baud rate etc.) in this file (best to
 start testing at a modest 9600 baud rate).
 
-5) Our example project is ESP2Ard.ino.  This app assumes another device is sending data TO the ardunio and it will echo the received data to the USB serial (use Arduino's Serial  Monitor to see the received data).
+5) Our example project is ESP2Ard.ino.  This app assumes another device is sending data TO your ardunio and it will echo the received data to the USB serial (use Arduino's Serial  Monitor to see the received data).
 
-7) The project should build and upload into Arduino.   Don't forget to
+7) The project should build without problem  and then you can upload into Arduino.   Don't forget to
 open the Serial Monitor to see the apps output.
 
-8) Now you are ready to prepare an ESP32 to talk to this arduino!
+8) Now you are ready to prepare an ESP32 to talk to this arduino! (see one of the other sub-directories next to this one).
+   
