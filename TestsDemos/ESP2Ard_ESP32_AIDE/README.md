@@ -2,7 +2,7 @@
 
 This is a demo for the ESP32 side of an ESP32-->Arduino link which is built using the Arduino ide 
 configured for ESP32 develoment.   This code will send data to an Arduino already running the version in
-an adjacent folder.  Please make sure the receiving arduino is running and wired properly before proceding. 
+[an adjacent folder](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/ESP2Ard_Ard_AIDE).  Please make sure the receiving arduino is running and wired properly before proceding. 
 
 ## Note: this must be used with Arduino 1.18.  Arduino IDE version 2.0 does not yet support ESP32
 
