@@ -97,7 +97,3 @@ I (3138) scan: RSSI             -96
 I (3138) scan: Channel          8
 I (3148) main_task: Returned from app_main()
 ```
-
-## Troubleshooting
-
-For any technical queries, please open an [issue](https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
