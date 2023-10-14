@@ -191,12 +191,12 @@ EA_msg_byte* EA_msg_make(const char* str){
 int EA_msg_pkt_build(EA_msg_byte* pkt, char* message){
   //int message_len = strlen(message) + 1 ; // we are going to include the trailing zero
   int msg_len = 0;
-  Serial.print(" -- I'm here -- ");Serial.println(message);
+ // Serial.print(" -- I'm here -- ");Serial.println(message);
   for (int i=0;i<ESP2Ard_max_payload_size;i++){
     if (message[i] == 0)
         { msg_len = i ;
           break; }
-    Serial.print("msg byte: ");Serial.println(message[i],HEX);
+   // Serial.print("msg byte: ");Serial.println(message[i],HEX);
     }
   //msg_len += 1; // include the trailing zero in message payload
 
@@ -281,20 +281,64 @@ void EA_log(const char* msg){
 #endif
 }
 
+/*
+ *  These are the error code returns
+ *
+    #define ESP32Ard_bad_pkt_header          -2
+    #define ESP32Ard_packet_length_overrun   -3
+    #define ESP32Ard_packet_length_incorrect -4
+    #define ESP32Ard_payload_size_zero       -5
+    #define ESP32Ard_packet_cksum_error      -6
+
+    #define ESP32Ard_packet_check_OK          1
+*/
+
+void msg2part(char* msg, int i){
+  Serial.print(msg); Serial.println(i);
+}
+
+//#define VERBOSE_EA_test_packet
+
 int EA_test_packet(EA_msg_byte* pkt){
-#if defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
-  Serial.println(" .. test a packet ...");
+
+#if defined(VERBOSE_EA_test_packet)
+
+  Serial.println("\n .. test a packet ...");
+
 #endif
-  if (pkt[0] != 0xFF && pkt[1] != 0)
-    return ESP32Ard_bad_pkt_header;
+
+if (pkt[0] != 0xFF  ){
+#ifdef VERBOSE_EA_test_packet
+
+    Serial.println("--------------- I caught a bad header[0]");
+    msg2part("       pkt[0]: ", pkt[0]);
+    msg2part("       pkt[1]: ", pkt[1]);
+    msg2part("       pkt[2]: ", pkt[2]);
+
+#endif
+    return ESP32Ard_bad_pkt_header; }
+  if (pkt[1] != 0x00  ){
+#ifdef VERBOSE_EA_test_packet
+
+//     Serial.println("--------------- I caught a bad header[1]");
+//     msg2part("       pkt[0]: ", pkt[0]);
+//     msg2part("       pkt[1]: ", pkt[1]);
+//     msg2part("       pkt[2]: ", pkt[2]);
+
+#endif
+     return ESP32Ard_bad_pkt_header; }
+
   int pkt_payload_size = (int)pkt[2];
-  if (pkt_payload_size == 0)                return ESP32Ard_payload_size_zero;
-  int len_payload=0;
-  int len_packet=0;
-  byte rcksum = 0;
+#ifdef VERBOSE_EA_test_packet
+  Serial.print("              pkt payld size: ");Serial.println(pkt_payload_size);
+#endif
+  if (pkt_payload_size == 0) return ESP32Ard_payload_size_zero;
   //
   //  compute length and payload checksum
   //
+  int len_payload=0;
+  int len_packet=0;
+  byte rcksum = 0;
   for (int i=0; i<ESP32Ard_max_packet_size ; i++){
     len_packet++;
     if (pkt[i] == 0xA) break;
@@ -306,7 +350,7 @@ int EA_test_packet(EA_msg_byte* pkt){
       rcksum += pkt[i+3];
     }
   int pkt_cksum_idx = len_payload+3;
-#if defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
+#if defined(VERBOSE_EA_test_packet)
   Serial.print("  PLL>");
   Serial.print(len_payload);
   Serial.print("  PkL>");
@@ -323,7 +367,7 @@ int EA_test_packet(EA_msg_byte* pkt){
   Serial.println(">");
 #endif
 
-  if (rcksum != (byte) pkt[pkt_cksum_idx])            return ESP32Ard_packet_cksum_error;
+  if (rcksum != (byte) pkt[pkt_cksum_idx])  return ESP32Ard_packet_cksum_error;
   if (len_payload != pkt_payload_size)      return ESP32Ard_packet_length_incorrect;
   return ESP32Ard_packet_check_OK;
 }

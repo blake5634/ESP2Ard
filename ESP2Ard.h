@@ -71,6 +71,7 @@
 
 #if defined(ARDUINO_PLATFORM)
 
+void msg_2part(char* msg, int i);
 #include <Arduino.h>
 typedef   unsigned char  EA_msg_byte;
 
