@@ -40,9 +40,10 @@ dedicated to USB, but some other Arduino models have open hardware serial ports)
 5) Set serial communication parameters (baud rate etc.) in this file (best to
 start testing at a modest 9600 baud rate. Increase speed if needed after everything works).
 
-5) Our example project is ESP2Ard.ino.  This app assumes another device is sending data TO the ardunio and it will echo the received data to the USB serial (use Arduino's Serial  Monitor to see the received data).
+5) Our example project is ESP2Ard.ino.  This app assumes another device is sending data TO your ardunio and it will echo the received data to the USB serial (use Arduino's Serial  Monitor to see the received data).
 
-7) The project should build and upload into Arduino.   Don't forget to
+7) The project should build without problem  and then you can upload into Arduino.   Don't forget to
 open the Serial Monitor to see the apps output.
 
-8) Now you are ready to prepare an ESP32 to talk to this arduino!
+8) Now you are ready to prepare an ESP32 to talk to this arduino! (see one of the other sub-directories next to this one).
+   

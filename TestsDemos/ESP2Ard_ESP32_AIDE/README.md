@@ -1,24 +1,17 @@
-# This folder 
-Under construction:  An example project for the ESP32 with the Arduino IDE.
+# This folder  (UNDER CONSTRUCTION)
 
-# preparation
-1) make another folder somewhere and clone ESP2Ard again in it.
-2) delete the file `ESP2Ard.c`
-6) On your Arduino, open the serial monitor (double check the port number).
+This is a demo for the ESP32 side of an ESP32-->Arduino link which is built using the Arduino ide 
+configured for ESP32 develoment.   This code will send data to an Arduino already running the version in
+[an adjacent folder](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/ESP2Ard_Ard_AIDE).  Please make sure the receiving arduino is running and wired properly before proceeding.
 
-Now, returning to this folder, we work on the ESP32 being programmed with Arduino IDE
+## Note: this must be used with Arduino 1.18.  Arduino IDE version 2.0 does not yet support ESP32
 
-# instructions
-1) copy ESP2ard.cpp and ESP2Ard.h into this directory
-4) Open an instance of arduino and open the arduino demo app: `> arduino ESP2Ard_ESP32_AIDE.ino`
-
-3) Edit `ESP2Ard.h` and select `ARDUINO_PLATFORM` by uncommenting if necessary. Make sure the other platforms are commented out.
-
-5) Use Arduino IDE's menus to configure it for your ESP32 board and its port.
-
-6) Use the "right-arrow" button to upload into your ESP32.
-
+## instructions
+1) copy ESP2ard.cpp and ESP2Ard.h from one level up into this directory.
+2) Edit `ESP2Ard.h` to uncomment `#define ESP32_Arduino_PLATFORM` and comment out the other platforms.
+3) start Arduino IDE: `> arduino ESP2Ard_ESP32_AIDE.ino`
+4) Make sure it is configured for your ESP32's serial port and correct ESP32 board. 
+5) Upload into your ESP32 board. (Arduino right-arrow).
 6) The ESP32 will scan for open access points on wifi and send info to Arduino
 via serial ports.
-
-7) Observe that wifi network scan results from the ESP32 should display on Arduino Serial Monitor after being sent over using ESP2Ard
+7) Observe that wifi network scan results from the ESP32 should display on Arduino Serial Monitor after being sent over using ESP2Ard.
