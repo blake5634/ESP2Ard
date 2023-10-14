@@ -38,7 +38,7 @@
 //
 //   Configure comm parameters which should be same on both ends
 //
-#define ESP32Ard_max_packet_size         50
+#define ESP32Ard_max_packet_size        500
 #define ESP32Ard_timeout_delay_ms        50
 #define ESP2Ard_BaudRate               9600
 #define ESP2Ard_OVERHEAD_BYTES            5  //len(packet) - len(payload)
@@ -68,8 +68,6 @@
 ////////////////////////////////////////////
 //  types and function protos
 
-#include <Arduino.h>
-
 #if defined(ESP32_IDF_PLATFORM)
 
 #include "esp_log.h"
@@ -83,6 +81,7 @@ typedef   unsigned char  EA_msg_byte;
 
 #if defined(ESP32_Arduino_PLATFORM)
 
+#include <Arduino.h>
 typedef   unsigned char  EA_msg_byte;
 
 #endif
@@ -90,8 +89,8 @@ typedef   unsigned char  EA_msg_byte;
 
 #ifdef ARDUINO_PLATFORM
 
-typedef   unsigned char  EA_msg_byte;
 #include <Arduino.h>
+typedef   unsigned char  EA_msg_byte;
 
 #endif
 

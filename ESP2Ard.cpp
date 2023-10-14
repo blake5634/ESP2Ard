@@ -150,8 +150,7 @@ int EA_get_packet_serial(EA_msg_byte* buf){
    // Serial.print("\n");
     while (EA_available() > 0) {
         buf[pidx] = EA_read();
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
+#if   defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
    //   Serial.println( sprintf(">> %d, %c", pidx, packet[pidx]) );
         Serial.print(">> ");
         Serial.print(pidx);
@@ -162,7 +161,6 @@ int EA_get_packet_serial(EA_msg_byte* buf){
         Serial.print(",  ");
         Serial.print((char)rep);
         Serial.println("");
-#endif
 #endif
         pidx++;
         if (buf[pidx] == '\n')  break; // == 0xA
@@ -183,10 +181,19 @@ EA_msg_byte* EA_msg_make(const char* str){
 
 // Build a packet from a text payload (eg. quoted string constant)
 int EA_msg_pkt_build(EA_msg_byte* pkt, char* message){
-  int message_len = strlen(message) + 1 ; // we are going to include the trailing zero
-  EA_msg_byte* payload = EA_msg_make(message);
-  EA_pkt_build(pkt, message_len, payload);
-  return message_len;
+  //int message_len = strlen(message) + 1 ; // we are going to include the trailing zero
+  int msg_len = 0;
+  for (int i=0;i++;i<ESP2Ard_max_payload_size){
+    if (message[i] == 0)
+    { msg_len = i ;
+      break; }
+    i++;
+    }
+  //msg_len += 1; // include the trailing zero in message payload
+
+  EA_msg_byte* payload = EA_msg_make(message); // proper type conversion
+  int pktlen = EA_pkt_build(pkt, msg_len, payload);
+  return pktlen;
 }
 
 // build a packet given a binary byte payload
@@ -282,13 +289,13 @@ int EA_test_packet(EA_msg_byte* pkt){
   int pkt_cksum_idx = len_payload+3;
 #ifdef ARDUINO_PLATFORM
 #ifdef ESP2Ard_DEBUG
-  Serial.print("  1>");
+  Serial.print("  PLL>");
   Serial.print(len_payload);
-  Serial.print("  2>");
+  Serial.print("  PkL>");
   Serial.print(len_packet);
-  Serial.print("  3>");
+  Serial.print("  rcksum>");
   Serial.print(rcksum);
-  Serial.print("  >");
+  //Serial.print("  >");
 
   Serial.println("");
   Serial.print("cksum test: ");
