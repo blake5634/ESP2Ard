@@ -9,7 +9,7 @@
  *
   DigitalReadSerial
 
-  Reads a digital input on pin 2, prints the result to the Serial Monitor
+  Reads a serial data input on pin 2, prints the result to the Serial Monitor
 
   This example code is in the public domain.
 
@@ -19,8 +19,6 @@
 #include <SoftwareSerial.h>
 #include "ESP2Ard.h"
 
-// digital pin 2 has a pushbutton attached to it. Give it a name:
-int pushButton = 2;
 
 // the setup routine runs once when you press reset:
 #define ARD_PIN_RX 2  // redefine for our app.

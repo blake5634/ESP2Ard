@@ -20,6 +20,7 @@
  */
  
 /////////////////////////  Configuration Zone ///////////////////////////////////////////
+//
 //  ESP2Ard_DEBUG works only on Arduino for now
 #define ESP2Ard_DEBUG  // more verbose debugging output
 
@@ -28,9 +29,9 @@
 //  What platform and IDE are we running on?
 //    uncomment just one of these:
 
-// #define ARDUINO_PLATFORM            // arduino HW on Arduino IDE
+// #define ARDUINO_PLATFORM          // arduino HW on Arduino IDE
 // #define ESP32_IDF_PLATFORM        // ESP32 HW on IDF IDE
-#define ESP32_Arduino_PLATFORM    // ESP32 HW on Arduino IDE
+#define ESP32_Arduino_PLATFORM     // ESP32 HW on Arduino IDE
 
 
 //
@@ -55,11 +56,10 @@
 //   Arduino pin setup
 #define ARD_PIN_RX   2
 #define ARD_PIN_TX   3
-
 #ifdef ARDUINO_PLATFORM
 //  Arduino Serial port type
 #define ARDUINO_SW_SERIAL
-//#define ARDUINO_HW_SERIAL
+//#define ARDUINO_HW_SERIAL // NO CODE for this case yet
 
 #endif // ARDUINO_PLATFORM
 
@@ -67,6 +67,14 @@
 
 ////////////////////////////////////////////
 //  types and function protos
+
+
+#if defined(ARDUINO_PLATFORM)
+
+#include <Arduino.h>
+typedef   unsigned char  EA_msg_byte;
+
+#endif
 
 #if defined(ESP32_IDF_PLATFORM)
 
@@ -80,14 +88,6 @@ typedef   unsigned char  EA_msg_byte;
 #endif
 
 #if defined(ESP32_Arduino_PLATFORM)
-
-#include <Arduino.h>
-typedef   unsigned char  EA_msg_byte;
-
-#endif
-
-
-#ifdef ARDUINO_PLATFORM
 
 #include <Arduino.h>
 typedef   unsigned char  EA_msg_byte;

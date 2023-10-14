@@ -11,9 +11,13 @@
 
 //
 // Set up for platform and serial environment
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM)  // arduino on arduino IDE
 #include <Arduino.h>
 #endif 
+
+#ifdef ESP32_Arduino_PLATFORM   // ESP32 on arduino IDE
+#include <Arduino.h>
+#endif
 
 //
 //   Serial functions for ARDUINO_SW_SERIAL
@@ -45,7 +49,7 @@ char EA_read(){
 int EA_write(){
   return 0;   //TODO: implement arduino send
 }
-#endif
+#endif   // ARDUINO_SW_SERIAL (line 21)
 
 
 //
@@ -125,7 +129,11 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   }
 }
 
-#endif  // ESP_IDF_PLATFORM
+#endif  // ESP_HW_SERIAL (line 54)
+
+
+
+
 
 
 //  Platform agnostic functions
@@ -183,11 +191,12 @@ EA_msg_byte* EA_msg_make(const char* str){
 int EA_msg_pkt_build(EA_msg_byte* pkt, char* message){
   //int message_len = strlen(message) + 1 ; // we are going to include the trailing zero
   int msg_len = 0;
-  for (int i=0;i++;i<ESP2Ard_max_payload_size){
+  Serial.print(" -- I'm here -- ");Serial.println(message);
+  for (int i=0;i<ESP2Ard_max_payload_size;i++){
     if (message[i] == 0)
-    { msg_len = i ;
-      break; }
-    i++;
+        { msg_len = i ;
+          break; }
+    Serial.print("msg byte: ");Serial.println(message[i],HEX);
     }
   //msg_len += 1; // include the trailing zero in message payload
 
@@ -224,7 +233,8 @@ int EA_pkt_build(EA_msg_byte* pkt, int payload_len, EA_msg_byte* payload){
 
 void EA_dump_packet_bytes(EA_msg_byte* pkt){
     // print it out raw for user
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
+
     Serial.println(">> packet bytes (hex): ");
     Serial.println("-------");
     for (int i=0;;i++){
@@ -237,8 +247,10 @@ void EA_dump_packet_bytes(EA_msg_byte* pkt){
     Serial.println("");
     Serial.println("-------");
 #endif
-#if defined(ESP32_HW_SERIAL) || defined(ESP32_Arduino_PLATFORM)
-ESP_LOGI(TAG,">> packet bytes (hex): ");
+
+#if defined(ESP32_IDF_PLATFORM)
+
+    ESP_LOGI(TAG,">> packet bytes (hex): ");
     ESP_LOGI(TAG,"--------");
     for (int i=0;;i++){
       ESP_LOGI(TAG,"%2d [0x%02x]",i,pkt[i]);
@@ -246,25 +258,32 @@ ESP_LOGI(TAG,">> packet bytes (hex): ");
       if(i>ESP32Ard_max_packet_size) break;
       }
     ESP_LOGI(TAG,"-------");
+
 #endif
+
 }
 //
 //  log method for functions that work on all platforms
 //
 void EA_log(const char* msg){
-#if defined(ESP32_HW_SERIAL) || defined(ESP32_Arduino_PLATFORM)
+#if defined(ESP32_HW_SERIAL)
   printf(msg);
 #endif
-#ifdef ARDUINO_PLATFORM
+
+
+
+
+
+
+
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
   Serial.println(msg);
 #endif
 }
 
 int EA_test_packet(EA_msg_byte* pkt){
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
+#if defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
   Serial.println(" .. test a packet ...");
-#endif
 #endif
   if (pkt[0] != 0xFF && pkt[1] != 0)
     return ESP32Ard_bad_pkt_header;
@@ -287,8 +306,7 @@ int EA_test_packet(EA_msg_byte* pkt){
       rcksum += pkt[i+3];
     }
   int pkt_cksum_idx = len_payload+3;
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
+#if defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
   Serial.print("  PLL>");
   Serial.print(len_payload);
   Serial.print("  PkL>");
@@ -304,7 +322,7 @@ int EA_test_packet(EA_msg_byte* pkt){
   Serial.print((int) pkt[pkt_cksum_idx]);
   Serial.println(">");
 #endif
-#endif
+
   if (rcksum != (byte) pkt[pkt_cksum_idx])            return ESP32Ard_packet_cksum_error;
   if (len_payload != pkt_payload_size)      return ESP32Ard_packet_length_incorrect;
   return ESP32Ard_packet_check_OK;
