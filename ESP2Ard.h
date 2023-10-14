@@ -28,9 +28,9 @@
 //  What platform and IDE are we running on?
 //    uncomment just one of these:
 
-#define ARDUINO_PLATFORM            // arduino HW on Arduino IDE
+// #define ARDUINO_PLATFORM            // arduino HW on Arduino IDE
 // #define ESP32_IDF_PLATFORM        // ESP32 HW on IDF IDE
-//#define ESP32_Arduino_PLATFORM    // ESP32 HW on Arduino IDE
+#define ESP32_Arduino_PLATFORM    // ESP32 HW on Arduino IDE
 
 
 //
@@ -70,22 +70,29 @@
 
 #include <Arduino.h>
 
-#if defined(ESP32_IDF_PLATFORM) || defined (ESP32_Arduino_PLATFORM)
+#if defined(ESP32_IDF_PLATFORM)
+
 #include "esp_log.h"
 #include "driver/uart.h"
-
 #define ESP32_HW_SERIAL
-
 #define TAG "ESP2Ard message:"  // used for logging
-
 typedef   unsigned char  byte;  // used w/ arduino just in case
 typedef   unsigned char  EA_msg_byte;
 
 #endif
 
+#if defined(ESP32_Arduino_PLATFORM)
+
+typedef   unsigned char  EA_msg_byte;
+
+#endif
+
+
 #ifdef ARDUINO_PLATFORM
+
 typedef   unsigned char  EA_msg_byte;
 #include <Arduino.h>
+
 #endif
 
 //

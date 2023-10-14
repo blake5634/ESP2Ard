@@ -51,7 +51,7 @@ int EA_write(){
 //
 //     Serial functions for ESP32 IDF IDE
 //
-#if defined(ESP32_HW_SERIAL) || defined(ESP32_Arduino_PLATFORM)
+#if defined(ESP32_HW_SERIAL)
 
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
@@ -131,7 +131,7 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
 //  Platform agnostic functions
 
 void EA_delay_ms(int dms){
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
     delay(dms); // ms
 #endif
 #ifdef ESP32_IDF_PLATFORM

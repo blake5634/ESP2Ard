@@ -60,9 +60,14 @@ void loop() {
        Serial.println(nrcvd);
     }
     else Serial.println("No packet errors! ");
-#ifdef ESP2Ard_DEBUG
-#ifdef ARDUINO_PLATFORM
-    // print it out raw for user
+#if defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
+//
+// some debug options for viewing received packets:
+//
+//#define OPTION1  1
+#define OPTION2  2
+    // 1 print it out raw byte by raw byte
+  #ifdef OPTION1
     Serial.println(">> received bytes: ");
     for (int i=0;i<nrcvd;i++){
       char ch = packet[i];
@@ -76,8 +81,12 @@ void loop() {
       }
     Serial.println("");
     Serial.println("-------"); 
-#endif
-#endif
+  #endif
+  #ifdef OPTION2
+  char* message = packet+3; // start of data
+  Serial.println(message);
+  #endif
+#endif //defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
     //
     // unpack the data packet
     //
@@ -87,7 +96,7 @@ void loop() {
     int cksum = packet[nrcvd-2];
     int eof = packet[nrcvd-1];
    // Serial.println(sprintf("cnt: %d hour: %d min: %d  chsum: %d", charcnt, hour, minute, cksum));
-    Serial.print("The app itself: \n cnt:");
+    Serial.print("The Time Set app itself: \n cnt:");
     Serial.print(charcnt);
     Serial.print("  hour:");
     Serial.print(hour);

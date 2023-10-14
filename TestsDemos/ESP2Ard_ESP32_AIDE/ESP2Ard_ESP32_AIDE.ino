@@ -15,7 +15,7 @@
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Set WiFi to station mode and disconnect from an AP if it was previously connected
     WiFi.mode(WIFI_STA);
@@ -42,9 +42,9 @@ void loop()
         EA_msg_pkt_build(pkt,"no networks found");
         Serial.println("no networks found");
     } else {
-        Serial.print(n);
-        Serial.println(" networks found:");
-        int plen = EA_msg_pkt_build(pkt, "networks found:");
+        Serial.print(n); printf("%d",n); printf("(local) nets found");
+        Serial.println("(local) networks found:");
+        int plen = EA_msg_pkt_build(pkt, "(rmt) nets:");
         int code = EA_test_packet(pkt);
         if (code < 0){
             Serial.println("network found message packet defective...");
@@ -52,8 +52,9 @@ void loop()
         EA_write_pkt_serial(pkt,plen); // send!
         for (int i = 0; i < n; ++i) {
             // Print SSID and RSSI for each network found    
-            char msg[] =  "                                      ";
-            sprintf(msg, "%2d: %20s",i+1, WiFi.SSID(i));
+           // char msg[] =  "                                      ";
+           // sprintf(msg, "%2d: %20s",i+1, WiFi.SSID(i));
+            char msg[] = "test msg only\n";
             int plen = EA_msg_pkt_build(pkt, msg);
             int code = EA_test_packet(pkt);
             if (code < 0){
