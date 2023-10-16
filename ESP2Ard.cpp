@@ -23,6 +23,7 @@
 //   Serial functions for ARDUINO_SW_SERIAL
 //
 #ifdef ARDUINO_SW_SERIAL
+
 #include <SoftwareSerial.h>
 SoftwareSerial* gSwSerialptr;  // place to setup SwSerial object
 
@@ -49,7 +50,7 @@ char EA_read(){
 int EA_write(){
   return 0;   //TODO: implement arduino send
 }
-#endif   // ARDUINO_SW_SERIAL (line 21)
+#endif
 
 
 //
@@ -129,11 +130,7 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   }
 }
 
-#endif  // ESP_HW_SERIAL (line 54)
-
-
-
-
+#endif  // ESP_IDF_PLATFORM
 
 
 //  Platform agnostic functions

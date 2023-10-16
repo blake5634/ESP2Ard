@@ -36,21 +36,21 @@ void loop()
     EA_msg_byte pkt[ESP2Ard_max_payload_size];
 
     // WiFi.scanNetworks will return the number of networks found
-    int n = WiFi.scanNetworks();
+    int nnets = WiFi.scanNetworks();
     Serial.println("scan done");
-    if (n == 0) { 
+    if ( nnets == 0) {
         EA_msg_pkt_build(pkt,"no networks found");
         Serial.println("no networks found");
     } else {
-        Serial.print(n); printf("%d",n); printf("(local) nets found");
+        Serial.print(nnets); printf("%d",nnets); printf("(local) nets found");
         Serial.println("(local) networks found:");
-        int plen = EA_msg_pkt_build(pkt, "(rmt) nets:");
+        int plen = EA_msg_pkt_build(pkt, "(remote wifi) access points:");
         int code = EA_test_packet(pkt);
         if (code < 0){
             Serial.println("network found message packet defective...");
         }
         EA_write_pkt_serial(pkt,plen); // send!
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < nnets; ++i) {
             // Print SSID and RSSI for each network found    
            // char msg[] =  "                                      ";
            // sprintf(msg, "%2d: %20s",i+1, WiFi.SSID(i));

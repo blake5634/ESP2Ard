@@ -16,16 +16,14 @@
   https://www.arduino.cc/en/Tutorial/BuiltInExamples/DigitalReadSerial
 */
 
-#include <SoftwareSerial.h>
 #include "ESP2Ard.h"
-
 
 // the setup routine runs once when you press reset:
 #define ARD_PIN_RX 2  // redefine for our app.
 #define ARD_PIN_TX 3
 // SoftwareSerial swSerial(PIN_RX,PIN_TX) ;  // serial coms on pins 2,3
 
-char packet[ESP32Ard_max_packet_size];  // coms packet from ESP32 via SoftwareSerial
+EA_msg_byte packet[ESP32Ard_max_packet_size];  // coms packet from ESP32 via SoftwareSerial
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
