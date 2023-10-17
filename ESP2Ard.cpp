@@ -52,9 +52,50 @@ int EA_write(){
 }
 #endif   // ARDUINO_SW_SERIAL (line 21)
 
+//
+//    Serial functions for ESP32 on the Arduino IDE
+//
+#if defined(ESP32_Arduino_PLATFORM)
+
+// ESP32_Arduino_PLATFORM
+void EA_init_serial(int rcv, int tx){
+  Serial2.begin(ESP2Ard_BaudRate);
+}
+
+// ESP32_Arduino_PLATFORM
+int EA_available(){
+  int nbytes = Serial2.available();
+  return nbytes;
+}
+
+// ESP32_Arduino_PLATFORM
+char EA_read(){
+}
+
+// ESP32_Arduino_PLATFORM
+int EA_write_pkt_serial(EA_msg_byte* buf, int len){
+  int code = EA_test_packet(buf);
+  if (code == ESP32Ard_packet_check_OK){
+    EA_log("packet checked out.. sending");
+    Serial2.write(buf, len);
+    return len;
+  }
+  else {
+    char msg[100];
+    EA_log("somethings wrong with uart_write_bytes");
+    sprintf(msg, "EA_write_pkt_serial(): trying to send a bad backet: error: %d",code);
+    EA_log(msg);
+    return 0;
+  }
+}
+
+
+
+#endif
+
 
 //
-//     Serial functions for ESP32 IDF IDE
+//     Serial functions for ESP32 using the IDF IDE
 //
 #if defined(ESP32_HW_SERIAL)
 
