@@ -50,7 +50,7 @@ char EA_read(){
 int EA_write(){
   return 0;   //TODO: implement arduino send
 }
-#endif
+#endif   // ARDUINO_SW_SERIAL (line 21)
 
 
 //
@@ -68,8 +68,8 @@ int EA_write(){
 QueueHandle_t uart_queue; // RTOS queue for UART
 
 uart_config_t* uartConfig;   //  keep config around
-int pin_rcv = 0;
-int pin_tx  = 0;
+int pin_rcv = ESP_PIN_RX;
+int pin_tx  = ESP_PIN_TX;
 
 
 // ESP32_HW_SERIAL
@@ -130,7 +130,11 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   }
 }
 
-#endif  // ESP_IDF_PLATFORM
+#endif  // ESP_HW_SERIAL (line 54)
+
+
+
+
 
 
 //  Platform agnostic functions
@@ -263,19 +267,15 @@ void EA_dump_packet_bytes(EA_msg_byte* pkt){
 //  log method for functions that work on all platforms
 //
 void EA_log(const char* msg){
-#if defined(ESP32_HW_SERIAL)
-  printf(msg);
-#endif
 
+  #if defined(ESP32_HW_SERIAL)
+    printf(msg);
+  #endif
 
+  #if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
+    Serial.println(msg);
+  #endif
 
-
-
-
-
-#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
-  Serial.println(msg);
-#endif
 }
 
 /*
@@ -291,7 +291,15 @@ void EA_log(const char* msg){
 */
 
 void msg2part(char* msg, int i){
+
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
   Serial.print(msg); Serial.println(i);
+#endif
+
+#if defined(ESP32_HW_SERIAL)
+  printf(msg); printf(" %d",i);
+#endif
+
 }
 
 //#define VERBOSE_EA_test_packet
@@ -336,6 +344,9 @@ if (pkt[0] != 0xFF  ){
   int len_payload=0;
   int len_packet=0;
   byte rcksum = 0;
+  //
+  //  compute length and payload checksum
+  //
   for (int i=0; i<ESP32Ard_max_packet_size ; i++){
     len_packet++;
     if (pkt[i] == 0xA) break;

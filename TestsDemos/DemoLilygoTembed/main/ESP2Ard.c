@@ -11,10 +11,12 @@
 
 //
 // Set up for platform and serial environment
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM)  // arduino on arduino IDE
 #include <Arduino.h>
-#endif
-#ifdef ESP32_PLATFORM
+#endif 
+
+#ifdef ESP32_Arduino_PLATFORM   // ESP32 on arduino IDE
+#include <Arduino.h>
 #endif
 
 //
@@ -47,17 +49,19 @@ char EA_read(){
 int EA_write(){
   return 0;   //TODO: implement arduino send
 }
-#endif
+#endif   // ARDUINO_SW_SERIAL (line 21)
 
 
 //
 //     Serial functions for ESP32 IDF IDE
 //
-#ifdef ESP32_HW_SERIAL
+#if defined(ESP32_HW_SERIAL)
 
 #include "driver/uart.h"
 #include "soc/uart_struct.h"
 
+#define PIN_RX 16
+#define PIN_TX 17
 #define BUF_SIZE (int) (ESP32Ard_max_packet_size * 2)
 
 QueueHandle_t uart_queue; // RTOS queue for UART
@@ -125,13 +129,17 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   }
 }
 
-#endif  // ESP_IDF_PLATFORM
+#endif  // ESP_HW_SERIAL (line 54)
+
+
+
+
 
 
 //  Platform agnostic functions
 
 void EA_delay_ms(int dms){
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
     delay(dms); // ms
 #endif
 #ifdef ESP32_IDF_PLATFORM
@@ -150,15 +158,17 @@ int EA_get_packet_serial(EA_msg_byte* buf){
    // Serial.print("\n");
     while (EA_available() > 0) {
         buf[pidx] = EA_read();
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
+#if   defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
    //   Serial.println( sprintf(">> %d, %c", pidx, packet[pidx]) );
         Serial.print(">> ");
         Serial.print(pidx);
         Serial.print("  ");
         Serial.print((EA_msg_byte) buf[pidx], HEX);
+        char rep = ' ';// print this if non-printable char
+        if (buf[pidx] >= 32 && buf[pidx] <= 126) rep = buf[pidx];
+        Serial.print(",  ");
+        Serial.print((char)rep);
         Serial.println("");
-#endif
 #endif
         pidx++;
         if (buf[pidx] == '\n')  break; // == 0xA
@@ -173,7 +183,29 @@ int EA_get_packet_serial(EA_msg_byte* buf){
   return ESP32Ard_timeout_error;  // approx timeoutms ms.
 }
 
-// build a packet given a payload
+EA_msg_byte* EA_msg_make(const char* str){
+  return (EA_msg_byte*) str;
+}
+
+// Build a packet from a text payload (eg. quoted string constant)
+int EA_msg_pkt_build(EA_msg_byte* pkt, char* message){
+  //int message_len = strlen(message) + 1 ; // we are going to include the trailing zero
+  int msg_len = 0;
+ // Serial.print(" -- I'm here -- ");Serial.println(message);
+  for (int i=0;i<ESP2Ard_max_payload_size;i++){
+    if (message[i] == 0)
+        { msg_len = i ;
+          break; }
+   // Serial.print("msg byte: ");Serial.println(message[i],HEX);
+    }
+  //msg_len += 1; // include the trailing zero in message payload
+
+  EA_msg_byte* payload = EA_msg_make(message); // proper type conversion
+  int pktlen = EA_pkt_build(pkt, msg_len, payload);
+  return pktlen;
+}
+
+// build a packet given a binary byte payload
 int EA_pkt_build(EA_msg_byte* pkt, int payload_len, EA_msg_byte* payload){
   pkt[0] = 0xFF;  // packet header0
   pkt[1] = 0x00;  // packet header1
@@ -201,7 +233,8 @@ int EA_pkt_build(EA_msg_byte* pkt, int payload_len, EA_msg_byte* payload){
 
 void EA_dump_packet_bytes(EA_msg_byte* pkt){
     // print it out raw for user
-#ifdef ARDUINO_PLATFORM
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
+
     Serial.println(">> packet bytes (hex): ");
     Serial.println("-------");
     for (int i=0;;i++){
@@ -214,7 +247,9 @@ void EA_dump_packet_bytes(EA_msg_byte* pkt){
     Serial.println("");
     Serial.println("-------");
 #endif
-#ifdef ESP32_IDF_PLATFORM
+
+#if defined(ESP32_IDF_PLATFORM)
+
     ESP_LOGI(TAG,">> packet bytes (hex): ");
     ESP_LOGI(TAG,"--------");
     for (int i=0;;i++){
@@ -223,30 +258,88 @@ void EA_dump_packet_bytes(EA_msg_byte* pkt){
       if(i>ESP32Ard_max_packet_size) break;
       }
     ESP_LOGI(TAG,"-------");
+
 #endif
+
 }
 //
 //  log method for functions that work on all platforms
 //
 void EA_log(const char* msg){
-#ifdef  ESP32_IDF_PLATFORM
-  printf(msg);
-#endif
-#ifdef ARDUINO_PLATFORM
-  Serial.println(msg);
-#endif
+
+  #if defined(ESP32_HW_SERIAL)
+    printf(msg);
+  #endif
+
+  #if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
+    Serial.println(msg);
+  #endif
+
 }
 
+/*
+ *  These are the error code returns
+ *
+    #define ESP32Ard_bad_pkt_header          -2
+    #define ESP32Ard_packet_length_overrun   -3
+    #define ESP32Ard_packet_length_incorrect -4
+    #define ESP32Ard_payload_size_zero       -5
+    #define ESP32Ard_packet_cksum_error      -6
+
+    #define ESP32Ard_packet_check_OK          1
+*/
+
+void msg2part(char* msg, int i){
+
+#if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
+  Serial.print(msg); Serial.println(i);
+#endif
+
+#if defined(ESP32_HW_SERIAL)
+  printf(msg); printf(" %d",i);
+#endif
+
+}
+
+//#define VERBOSE_EA_test_packet
+
 int EA_test_packet(EA_msg_byte* pkt){
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
-  Serial.println(" .. test a packet ...");
+
+#if defined(VERBOSE_EA_test_packet)
+
+  Serial.println("\n .. test a packet ...");
+
 #endif
+
+if (pkt[0] != 0xFF  ){
+#ifdef VERBOSE_EA_test_packet
+
+    Serial.println("--------------- I caught a bad header[0]");
+    msg2part("       pkt[0]: ", pkt[0]);
+    msg2part("       pkt[1]: ", pkt[1]);
+    msg2part("       pkt[2]: ", pkt[2]);
+
 #endif
-  if (pkt[0] != 0xFF && pkt[1] != 0)
-    return ESP32Ard_bad_pkt_header;
+    return ESP32Ard_bad_pkt_header; }
+  if (pkt[1] != 0x00  ){
+#ifdef VERBOSE_EA_test_packet
+
+//     Serial.println("--------------- I caught a bad header[1]");
+//     msg2part("       pkt[0]: ", pkt[0]);
+//     msg2part("       pkt[1]: ", pkt[1]);
+//     msg2part("       pkt[2]: ", pkt[2]);
+
+#endif
+     return ESP32Ard_bad_pkt_header; }
+
   int pkt_payload_size = (int)pkt[2];
-  if (pkt_payload_size == 0)                return ESP32Ard_payload_size_zero;
+#ifdef VERBOSE_EA_test_packet
+  Serial.print("              pkt payld size: ");Serial.println(pkt_payload_size);
+#endif
+  if (pkt_payload_size == 0) return ESP32Ard_payload_size_zero;
+  //
+  //  compute length and payload checksum
+  //
   int len_payload=0;
   int len_packet=0;
   byte rcksum = 0;
@@ -264,15 +357,14 @@ int EA_test_packet(EA_msg_byte* pkt){
       rcksum += pkt[i+3];
     }
   int pkt_cksum_idx = len_payload+3;
-#ifdef ARDUINO_PLATFORM
-#ifdef ESP2Ard_DEBUG
-  Serial.print("  1>");
+#if defined(VERBOSE_EA_test_packet)
+  Serial.print("  PLL>");
   Serial.print(len_payload);
-  Serial.print("  2>");
+  Serial.print("  PkL>");
   Serial.print(len_packet);
-  Serial.print("  3>");
+  Serial.print("  rcksum>");
   Serial.print(rcksum);
-  Serial.print("  >");
+  //Serial.print("  >");
 
   Serial.println("");
   Serial.print("cksum test: ");
@@ -281,8 +373,8 @@ int EA_test_packet(EA_msg_byte* pkt){
   Serial.print((int) pkt[pkt_cksum_idx]);
   Serial.println(">");
 #endif
-#endif
-  if (rcksum != (byte) pkt[pkt_cksum_idx])            return ESP32Ard_packet_cksum_error;
+
+  if (rcksum != (byte) pkt[pkt_cksum_idx])  return ESP32Ard_packet_cksum_error;
   if (len_payload != pkt_payload_size)      return ESP32Ard_packet_length_incorrect;
   return ESP32Ard_packet_check_OK;
 }

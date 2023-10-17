@@ -67,8 +67,8 @@ int EA_write(){
 QueueHandle_t uart_queue; // RTOS queue for UART
 
 uart_config_t* uartConfig;   //  keep config around
-int pin_rcv = 0;
-int pin_tx  = 0;
+int pin_rcv = ESP_PIN_RX;
+int pin_tx  = ESP_PIN_TX;
 
 
 // ESP32_HW_SERIAL
