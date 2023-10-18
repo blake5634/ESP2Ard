@@ -10,7 +10,7 @@ A package for serial communication between ESP32 and Arduino.
 
 3. [Adding `ESP2Ard` to an EXISTING idf.py  project](https://github.com/blake5634/ESP2Ard#adding-esp2ard-to-an-existing-idfpy--project)
 
-4. [Trying it Out](https://github.com/blake5634/ESP2Ard#trying-it-out-with-Test-and-Demo-Apps)
+4. [Trying it Out](https://github.com/blake5634/ESP2Ard#trying-it-out-with-tests-and-demo-apps)
 
 5. [Software Building and Installation](https://github.com/blake5634/ESP2Ard#software-building-and-installation)
 
