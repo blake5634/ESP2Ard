@@ -72,13 +72,14 @@ by watching serial debugging output on the receiving end.
 
 The Test/Demo examples so far are:
 
-1) Arduino Uno using AIDE  (`TestsDemos/ESP2Ard_Ard_AIDE`)
+1) Arduino Uno using AIDE  ([`TestsDemos/ESP2Ard_Ard_AIDE`](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/ESP2Ard_ESP32_AIDE))
 
-2) ESP32 Using Espressif's `idf.py` toolchain (`TestsDemos/ESP2Ard_ESP32_IDF`)
+3) ESP32 Using Arduino's IDE (AIDE) ([`TestsDemos/ESP2Ard_ESP32_AIDE`](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/ESP2Ard_ESP32_AIDE)
 
-3) ESP32 Using Arduino's IDE (AIDE) (`TestsDemos/ESP2Ard_ESP32_AIDE`)
+2) ESP32 Using Espressif's `idf.py` toolchain ([`TestsDemos/ESP2Ard_ESP32_IDF`](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/ESP2Ard_ESP32_IDF
+))
 
-4) Lilygo's T-Embded device (ESP32-based) with `idf.py` (`TestsDemos/DemoLilygoTembed`)
+4) Lilygo's T-Embded device (ESP32-based) with `idf.py` ([`TestsDemos/DemoLilygoTembed`](https://github.com/blake5634/ESP2Ard/tree/main/TestsDemos/DemoLilygoTembed))
 
 The Arduino example has been tested only on Arduino Uno.   The ESP32 hardware examples (2,3 above)
 should work with a generic ESP32 board (tested with the ESP32-S3 variant).   There is no support
