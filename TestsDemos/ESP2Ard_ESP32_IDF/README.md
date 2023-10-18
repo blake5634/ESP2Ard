@@ -1,4 +1,4 @@
-(This is adapted from the official Espressif example `wifi/scan`)
+(This is adapted from the official Espressif example [`wifi/scan`](https://github.com/espressif/esp-idf/tree/master/examples/wifi/scan))
 
 ## STATUS:    This WILL be modified to be an ESP2Ard example that can run on generic ESP32S3 boards.
 
