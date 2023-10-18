@@ -20,7 +20,6 @@
  */
  
 /////////////////////////  Configuration Zone ///////////////////////////////////////////
-//
 //  ESP2Ard_DEBUG works only on Arduino for now
 #define ESP2Ard_DEBUG  // more verbose debugging output
 
@@ -48,18 +47,19 @@
 //
 //  >>> ESP32, configure serial params here
 //
-#define ESP_PIN_RX             2
-#define ESP_PIN_TX             3
+#define ESP_PIN_RX              16  // Receive data pin on ESP32
+#define ESP_PIN_TX              17
 #define ESP_UART_NUM    UART_NUM_2  //UART_NUM_2 from driver/uart.h
- 
+
+#ifdef ARDUINO_PLATFORM
 //
 //   Arduino pin setup
 #define ARD_PIN_RX   2
 #define ARD_PIN_TX   3
-#ifdef ARDUINO_PLATFORM
+
 //  Arduino Serial port type
 #define ARDUINO_SW_SERIAL
-//#define ARDUINO_HW_SERIAL // NO CODE for this case yet
+//#define ARDUINO_HW_SERIAL
 
 #endif // ARDUINO_PLATFORM
 
@@ -94,7 +94,6 @@ typedef   unsigned char  EA_msg_byte;
 typedef   unsigned char  EA_msg_byte;
 
 #endif
-
 //
 // defines for all platforms and ports:
 //
