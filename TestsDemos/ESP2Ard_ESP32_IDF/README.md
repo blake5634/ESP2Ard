@@ -9,10 +9,9 @@ No changes have been made to this running example `main/scan.c` yet.
 | Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-S2 | ESP32-S3 |
 | ----------------- | ----- | -------- | -------- | -------- | -------- | -------- |
 
-# Wi-Fi Scan Example
- 
+# `scan.c` is a Wi-Fi Scan Example
 
-This example shows how to scan your wifi environment for available set of APs.
+This example shows how to scan your wifi environment for the available set of access-points (wifi networks).
 
 ## How to use example
 
