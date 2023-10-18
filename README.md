@@ -85,8 +85,8 @@ should work with a generic ESP32 board (tested with the ESP32-S3 variant).   The
 yet for Arduino hardware serial ports (UARTs) because Arduino Uno can only use Software Serial for this.
 
 ## Software Building and installation
+The `ESP2Ard.*` files in the top level are the official copies. 
+Once you choose which demo you want to build, 
+ copy them into your chosen Test or Demo according to the local instructions.
 
-Once you choose
-The `ESP2Ard.*` files in the top level and  be copied into your chosen Test or Demo. See instructions.
-
-Go to `README.md` in the appropriate subdirectory in `TestsDemos` for instructions.
+Go to `README.md` in the appropriate subdirectory in `TestsDemos` for the local instructions.
