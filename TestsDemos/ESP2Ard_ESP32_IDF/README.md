@@ -74,31 +74,31 @@ I (508) wifi_init: tcp mss: 1440
 I (508) wifi_init: WiFi IRAM OP enabled
 I (518) wifi_init: WiFi RX IRAM OP enabled
 I (518) phy_init: phy_version 610,2bff4c8,Jul 27 2023,20:22:14
-I (568) wifi:mode : sta (34:85:18:44:33:0c)
+I (568) wifi:mode : sta (34:85:18:aa:xx:yy)
 I (568) wifi:enable tsf
 I (3068) scan: Total APs scanned = 8
 I (3068) scan: SSID             NotAvailable
 I (3068) scan: RSSI             -77
 I (3068) scan: Channel          6
-I (3068) scan: SSID             bsmt_guest
+I (3068) scan: SSID             HomeGuest
 I (3068) scan: RSSI             -85
 I (3078) scan: Channel          1
-I (3078) scan: SSID             bsmt_guest
+I (3078) scan: SSID             HomeGuest
 I (3078) scan: RSSI             -86
 I (3088) scan: Channel          11
-I (3088) scan: SSID             hannaford1
+I (3088) scan: SSID             MyHouseWIFI
 I (3098) scan: RSSI             -86
 I (3098) scan: Channel          11
-I (3098) scan: SSID             hannaford1
+I (3098) scan: SSID             MyHouseWIFI
 I (3108) scan: RSSI             -90
 I (3108) scan: Channel          6
 I (3108) scan: SSID             Main House
 I (3118) scan: RSSI             -95
 I (3118) scan: Channel          3
-I (3118) scan: SSID             lee-weizenbaum-guest
+I (3118) scan: SSID             Zuckerberg-guest
 I (3128) scan: RSSI             -96
 I (3128) scan: Channel          1
-I (3128) scan: SSID             Series of Tubes
+I (3128) scan: SSID             TransContinentalTelegraph
 I (3138) scan: RSSI             -96
 I (3138) scan: Channel          8
 I (3148) main_task: Returned from app_main()
