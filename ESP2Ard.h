@@ -28,9 +28,9 @@
 //  What platform and IDE are we running on?
 //    uncomment just one of these:
 
-// #define ARDUINO_PLATFORM          // arduino HW on Arduino IDE
+#define ARDUINO_PLATFORM          // arduino HW on Arduino IDE
 // #define ESP32_IDF_PLATFORM        // ESP32 HW on IDF IDE
-#define ESP32_Arduino_PLATFORM     // ESP32 HW on Arduino IDE
+//#define ESP32_Arduino_PLATFORM     // ESP32 HW on Arduino IDE
 
 
 //
@@ -73,7 +73,7 @@
 
 void msg_2part(char* msg, int i);
 #include <Arduino.h>
-typedef   char  EA_msg_byte;
+typedef   byte  EA_msg_byte;
 
 #endif
 
