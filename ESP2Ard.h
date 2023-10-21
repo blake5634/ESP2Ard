@@ -51,6 +51,10 @@
 #define ESP_PIN_TX              17
 #define ESP_UART_NUM    UART_NUM_2  //UART_NUM_2 from driver/uart.h
 
+
+//
+//  >>> Arduino on Arduino IDE: config serial params
+//
 #ifdef ARDUINO_PLATFORM
 //
 //   Arduino pin setup
@@ -59,20 +63,28 @@
 
 //  Arduino Serial port type
 #define ARDUINO_SW_SERIAL
-//#define ARDUINO_HW_SERIAL
+//#define ARDUINO_HW_SERIAL  // no code written for this yet!
 
 #endif // ARDUINO_PLATFORM
 
+//
+//  >>>  ESP32 on Arduino IDE: config serial params
+
+#if defined(ESP2Ard_ESP32_AIDE)
+
+#define ARD_PIN_RX 16  //  (these usually same as ESP_PIN_RX/TX)  
+#define ARD_PIN_TX 17
+
+#endif
+ 
 /////////////////////////////////  End of Configuration Zone ////////////////////////////
 
 ////////////////////////////////////////////
 //  types and function protos
 
-
 #if defined(ARDUINO_PLATFORM)
 
 void msg_2part(char* msg, int i);
-#include <Arduino.h>
 typedef   byte  EA_msg_byte;
 
 #endif
