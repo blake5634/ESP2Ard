@@ -18,9 +18,11 @@
 #include "esp_event.h"
 #include "nvs_flash.h"
 
+#include "ESP2Ard.h"
+
 #define DEFAULT_SCAN_LIST_SIZE CONFIG_EXAMPLE_SCAN_LIST_SIZE
 
-static const char *TAG = "scan";
+// static const char *TAG = "scan";
 
 
 /* Initialize Wi-Fi as sta and set scan method */
@@ -39,16 +41,26 @@ static void wifi_scan(void)
     uint16_t ap_count = 0;
     memset(ap_info, 0, sizeof(ap_info));
 
+    char msg[200] = {0};
+    EA_msg_byte pkt[250] = {0};
+    int plen = 0;
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_scan_start(NULL, true);
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
     ESP_LOGI(TAG, "Total APs scanned = %u", ap_count);
-    for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
+//     for (int i = 0; (i < DEFAULT_SCAN_LIST_SIZE) && (i < ap_count); i++) {
+    for (int i = 0; (i < 4) && (i < ap_count); i++) {
         ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
         ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
         ESP_LOGI(TAG, "Channel \t\t%d", ap_info[i].primary);
+        //  Send it !
+        sprintf(msg, "%40s   chan: %d", ap_info[i].ssid, ap_info[i].primary);
+        plen = EA_msg_pkt_build(pkt, msg);
+        EA_write_pkt_serial(pkt, plen);
+        //
     }
 
 }
@@ -62,6 +74,9 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK( ret );
+
+    EA_init_serial(ESP_PIN_RX, ESP_PIN_TX);
+    ESP_LOGI(TAG, " Initialized serial port (ESP2Ard)");
 
     wifi_scan();
 }
