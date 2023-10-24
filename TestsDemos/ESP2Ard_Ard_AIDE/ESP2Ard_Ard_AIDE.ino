@@ -47,7 +47,6 @@ void loop() {
     Serial.println(" serial port timed out");
     }
   else if (nrcvd > 0) {
-   
     ercd = EA_test_packet(packet);
     if (ercd < 0){
        Serial.print(" bad packet received: code, n:");
@@ -56,6 +55,8 @@ void loop() {
        Serial.println(nrcvd);
     }
     else Serial.println("No packet errors! ");
+
+#define ESP2Ard_DEBUG
 #if defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
 //
 // some debug options for viewing received packets:
