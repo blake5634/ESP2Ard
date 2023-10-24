@@ -27,8 +27,9 @@
 //
 //  What platform and IDE are we running on?
 //    uncomment just one of these:
-
-#define ARDUINO_PLATFORM          // arduino HW on Arduino IDE
+//    (these start out ALL commented to prevent
+//     build errors)  Choose your platform HERE:
+//#define ARDUINO_PLATFORM          // arduino HW on Arduino IDE
 // #define ESP32_IDF_PLATFORM        // ESP32 HW on IDF IDE
 //#define ESP32_Arduino_PLATFORM     // ESP32 HW on Arduino IDE
 

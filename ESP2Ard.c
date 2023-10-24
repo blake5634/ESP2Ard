@@ -52,6 +52,7 @@ int EA_write(){
 }
 #endif   // ARDUINO_SW_SERIAL (line 21)
 
+
 //
 //    Serial functions for ESP32 on the Arduino IDE
 //
@@ -59,7 +60,7 @@ int EA_write(){
 
 // ESP32_Arduino_PLATFORM
 void EA_init_serial(int rcv, int tx){
-  Serial2.begin(ESP2Ard_BaudRate);
+  Serial2.begin(ESP2Ard_BaudRate, SERIAL_8N1, tx, rcv);
 }
 
 // ESP32_Arduino_PLATFORM
@@ -419,4 +420,6 @@ if (pkt[0] != 0xFF  ){
   if (rcksum != (byte) pkt[pkt_cksum_idx])  return ESP32Ard_packet_cksum_error;
   if (len_payload != pkt_payload_size)      return ESP32Ard_packet_length_incorrect;
   return ESP32Ard_packet_check_OK;
-}
+} // end of EA_test_packet()
+
+
