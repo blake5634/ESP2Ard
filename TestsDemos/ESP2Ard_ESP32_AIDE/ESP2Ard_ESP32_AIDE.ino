@@ -50,17 +50,23 @@ void loop()
             Serial.println("network found message packet defective...");
         }
         EA_write_pkt_serial(pkt,plen); // send!
+        
         for (int i = 0; i < nnets; ++i) {
             // Print SSID and RSSI for each network found    
            // char msg[] =  "                                      ";
-           // sprintf(msg, "%2d: %20s",i+1, WiFi.SSID(i));
-            char msg[] = "test msg only\n";
+            char msg[200]={0};
+            sprintf_P(msg, "%2d:%s",i+1, WiFi.SSID(i));
             int plen = EA_msg_pkt_build(pkt, msg);
             int code = EA_test_packet(pkt);
             if (code < 0){
                 Serial.println("SSID message packet defective...");
             }
             EA_write_pkt_serial(pkt,plen); // send!
+            Serial.print("Sent msg:"); Serial.println(msg);
+
+            // reset msg buffer
+            for (int i=0;i<200;i++) msg[i] = 0;
+
             Serial.print(i + 1);
             Serial.print(": ");
             Serial.print(WiFi.SSID(i));
@@ -68,7 +74,7 @@ void loop()
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN)?" ":"*");
-            delay(10);
+            delay(250);
         }
     }
     Serial.println("");
