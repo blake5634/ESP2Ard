@@ -84,6 +84,7 @@
 
 #if defined(ARDUINO_PLATFORM)
 
+#include <Arduino.h>
 void msg_2part(char* msg, int i);
 typedef   byte  EA_msg_byte;
 
