@@ -78,6 +78,7 @@ void loop()
             if (code < 0){
                 Serial.println("SSID message packet defective...");
             }
+            ////////////////////////////////////  Send
             EA_write_pkt_serial(pkt,plen); // send!
             Serial.print("         Sent msg:"); Serial.println(msg);
 
