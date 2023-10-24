@@ -84,7 +84,7 @@
 //  types and function protos
 
 #if defined(ARDUINO_PLATFORM)
-
+#define <Arduino.h>
 void msg_2part(char* msg, int i);
 typedef   byte  EA_msg_byte;
 
@@ -96,7 +96,7 @@ typedef   byte  EA_msg_byte;
 #include "driver/uart.h"
 #define ESP32_HW_SERIAL
 #define TAG "ESP2Ard message:"  // used for logging
-typedef   unsigned char  byte;  // used w/ arduino just in case
+
 typedef   unsigned char  EA_msg_byte;
 
 #endif
