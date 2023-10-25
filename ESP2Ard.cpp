@@ -192,6 +192,7 @@ void EA_delay_ms(int dms){
 
 int EA_get_packet_serial(EA_msg_byte* buf){
   int pidx = 0;
+  char c = ' ';
   pidx = 0;
   int timeoutms = ESP32Ard_timeout_delay_ms;
   while(1){
@@ -199,23 +200,25 @@ int EA_get_packet_serial(EA_msg_byte* buf){
     if (EA_available()  == 0 )  return 0;
    // Serial.print("\n");
     while (EA_available() > 0) {
-        buf[pidx] = EA_read();
+        c = EA_read();
+        buf[pidx] = c;
 #if   defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
    //   Serial.println( sprintf(">> %d, %c", pidx, packet[pidx]) );
         Serial.print(">> ");
         Serial.print(pidx);
         Serial.print("  ");
-        Serial.print((EA_msg_byte) buf[pidx], HEX);
-        char rep = ' ';// print this if non-printable char
-        if (buf[pidx] >= 32 && buf[pidx] <= 126) rep = buf[pidx];
+        Serial.print((EA_msg_byte)  c , HEX);
+        char rep = ' ';// print space if non-printable char
+        if (c >= 32 && c <= 126) rep = c;
         Serial.print(",  ");
-        Serial.print((char)rep);
+        Serial.print((char)rep);  // print it if printable
         Serial.println("");
 #endif
+        if (c == '\n')  break; // == 0xA
         pidx++;
-        if (buf[pidx] == '\n')  break; // == 0xA
+      if (c == '\n') break; // 0xA == end of message
       EA_delay_ms(1);
-    }
+    } // end of message
     if (timeoutms <= 0) { pidx = 0; break;}
     else {
       timeoutms = ESP32Ard_timeout_delay_ms; // reset timout timer
