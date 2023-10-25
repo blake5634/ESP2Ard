@@ -140,9 +140,10 @@ void EA_init_serial(int rcv, int tx){
 
 // ESP32_HW_SERIAL
 int EA_available(){
-  ESP_LOGI(TAG, "ESP2Ard error:  EA_available() not allowed on ESP_HW_SERIAL platform. use EA_read()");
-  // die here...
-  while(1)  EA_delay_ms(2000);
+  int length;
+  uart_get_buffered_data_len(UART_NUM_2, (size_t*)&length);
+  if (length < 1)  return -1;
+  else             return  1;
   }
 
 // ESP32_HW_SERIAL
