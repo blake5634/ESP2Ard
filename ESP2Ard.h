@@ -56,6 +56,7 @@
 //  >>> Arduino on Arduino IDE: config serial params
 //
 #ifdef ARDUINO_PLATFORM
+#include <Arduino.h>
 //
 //   Arduino pin setup
 #define ARD_PIN_RX   2
