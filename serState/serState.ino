@@ -18,13 +18,15 @@ int rcvpkt(char buf[], int timeout){
   int ptr = 0;
   int smreturn = 0;
   char c;
+  char *dataptr = &c;
   while(1){
-    c = EA_read();
+    while(EA_read(dataptr)==0) {
+      tout--; delay(1);} // wait for data
     smreturn = state_machine(c, buf );
     if (smreturn > 0) { // we got a full packet
         return smreturn;
         }
-    Serial.print(" in state: ");Serial.print(smreturn);Serial.print("  char: ");Serial.println(c);
+//    Serial.print(" in state: ");Serial.print(smreturn);Serial.print("  char2: ");Serial.println(c,HEX);
     delay(1);
     tout--;
     if (tout < 0) return EA_timeout_ERROR;
@@ -51,6 +53,7 @@ int state_machine(char c, char* buf){
         buf[ptr++] = c;
       }
       else {
+        ptr = 0;
         rcv_state = -1; // not true pkt start
       }
       return rcv_state;
@@ -65,8 +68,9 @@ int state_machine(char c, char* buf){
     case -4:
       buf[ptr++] = c;
       bc++;
-      if (bc >= byte_cnt+1){ // account for packet-close byte
-        return bc+3; // total packet len
+      // byte_count, computed by sender, does not include FF, 00, cksum and EOP
+      if (bc >= byte_cnt+2){ // account for cksum byte and  packet-close byte
+        return bc+2; // total packet len: (bc + {FF, 00})
       }
       else {
         rcv_state = -4;
@@ -77,24 +81,39 @@ int state_machine(char c, char* buf){
 }
 
 // test mock
-char EA_read(){
+int EA_read(char* cdata_ptr){ // return 1=valid data byte, 0 = no databyte
+  static int dropinterval=4; // every 4 - no byte avail
+  static int dropcnt = 0;
   static int i=0;
   // tst1 has junk before and after the pckt
-  char tst1[] = {9,9,9,0xFF, 0, 3, 1, 2, 3, 0x0A, 0x0D, 0x0D};
-  int  len1 = 12;
+  char tst1[] = {9,9,9,0xFF, 0, 3, 1, 2, 3, 6, 0x0A, 0x0D, 0x0D};
+  int  len1 = 13;
   // tst2 does not have junk before and after the pckt
-  char tst2[] = {0xFF, 0, 3, 1, 2, 3, 4, 0x0A};
+  char tst2[] = {0xFF, 0, 3, 1, 2, 3, 6, 0x0A};
   int  len2 = 8;
+
   int len = 0;
   char* tbytes = tst1;
-
+  // select a test
   tbytes = tst2;
   len = len2;
-  if (i<=len){ Serial.print(" >");Serial.println(tbytes[i],HEX); return tbytes[i++]; }
-  else {
-    Serial.println("ERROR: test bytes overrun");
-    while(1) delay(100);
-    return -500;}
+  // simulate no byte available some times
+  if (dropcnt++ % dropinterval != 0){
+    // print the bytes as they are "read"
+    if (i<=len)  {
+      Serial.print(" (simread)>");Serial.println((char)tbytes[i], HEX);
+      *cdata_ptr = tbytes[i++];
+      return 1; }
+    else {
+      Serial.println("ERROR: test bytes overrun");
+      while(1) delay(100);
+      return -500;}
+    }
+  else {  // simulate no bytes available
+    Serial.println("sim. drop");
+    *cdata_ptr = NULL;
+    return 0;
+  }
 }
 // the loop function runs over and over again forever
 void loop() {
@@ -106,7 +125,7 @@ void loop() {
 
   // Test rcvpkt
   static char buffer[200]={0};
-  Serial.print("  ... test");
+  Serial.println("begining the test:");
   retval = rcvpkt(buffer, 50);
   if (retval>0){  Serial.println("Complete packet Returned (subject to EA_test_pkt() verification"); while(1) delay(500);}
   if (retval == EA_timeout_ERROR) { Serial.println("ERROR: packet read timeout"); while(1) delay(500);}
