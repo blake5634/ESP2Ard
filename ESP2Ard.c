@@ -52,7 +52,6 @@ int EA_write(){
 }
 #endif   // ARDUINO_SW_SERIAL (line 21)
 
-
 //
 //    Serial functions for ESP32 on the Arduino IDE
 //
