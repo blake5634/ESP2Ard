@@ -6,6 +6,9 @@ configured for ESP32 develoment.   This code will send data to an Arduino alread
 
 ## Note: this must be used with Arduino 1.18.  Arduino IDE version 2.0 does not yet support ESP32
 
+## There is a new release of https://espressif.github.io/arduino-esp32/package_esp32_index.json.
+Please select Board Type appropriately for your ESP32 board.
+
 ## instructions
 1) copy ESP2ard.cpp and ESP2Ard.h from one level up into this directory.
 2) Edit `ESP2Ard.h` to uncomment `#define ESP32_Arduino_PLATFORM` and comment out the other platforms.

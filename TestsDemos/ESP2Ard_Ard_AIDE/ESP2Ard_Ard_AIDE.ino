@@ -47,7 +47,6 @@ void loop() {
     Serial.println(" serial port timed out");
     }
   else if (nrcvd > 0) {
-   
     ercd = EA_test_packet(packet);
     if (ercd < 0){
        Serial.print(" bad packet received: code, n:");
@@ -55,14 +54,19 @@ void loop() {
        Serial.print(" ");
        Serial.println(nrcvd);
     }
-    else Serial.println("No packet errors! ");
+    else {Serial.print("No packet errors!! ");
+      Serial.print(nrcvd);
+      Serial.println(" bytes"); }
+
+#define ESP2Ard_DEBUG
 #if defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
 //
 // some debug options for viewing received packets:
 //
-//#define OPTION1  1
-#define OPTION2  2
-    // 1 print it out raw byte by raw byte
+#define OPTION1  1
+// #define OPTION2  2
+
+  // 1 print it out raw byte by raw byte
   #ifdef OPTION1
     Serial.println(">> received bytes: ");
     for (int i=0;i<nrcvd;i++){
@@ -91,7 +95,11 @@ void loop() {
     int minute = packet[4];
     int cksum = packet[nrcvd-2];
     int eof = packet[nrcvd-1];
+    Serial.println(sprintf("cnt: %d chsum: %d", charcnt, cksum));
+    Serial.println(packet[3]);
    // Serial.println(sprintf("cnt: %d hour: %d min: %d  chsum: %d", charcnt, hour, minute, cksum));
+    //#define TimeSetApp
+#ifdef TimeSetApp
     Serial.print("The Time Set app itself: \n cnt:");
     Serial.print(charcnt);
     Serial.print("  hour:");
@@ -101,6 +109,7 @@ void loop() {
     Serial.print("  cksum(HEX):");
     Serial.print(cksum,HEX);
     Serial.println(""); 
+#endif
     for (int i=0;i<ESP32Ard_max_packet_size;i++){  // clear the pkt buffer to prevent logic breaks.
       packet[i] = 0;
     }
