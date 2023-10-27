@@ -77,14 +77,14 @@ char EA_read(){
 int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   int code = EA_test_packet(buf);
   if (code == ESP32Ard_packet_check_OK){
-    EA_log("packet checked out.. sending");
+ //   EA_log("packet checked out.. sending(write_pkt_serial)(ESP_AIDE)");
     Serial2.write(buf, len);
     return len;
   }
   else {
     char msg[100];
-    EA_log("somethings wrong with uart_write_bytes");
-    sprintf(msg, "EA_write_pkt_serial(): trying to send a bad backet: error: %d",code);
+    EA_log("Error found by EA_test_packet()(ESP_AIDE)");
+    sprintf(msg, "EA_write_pkt_serial(): trying to send a bad backet: error: %d (ESP_AIDE)",code);
     EA_log(msg);
     return 0;
   }
@@ -158,7 +158,7 @@ char EA_read(){
 int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   int code = EA_test_packet(buf);
   if (code == ESP32Ard_packet_check_OK){
-    EA_log("packet checked out.. sending");
+  //  EA_log("packet checked out.. sending(write_pkt_serial/ESP32)");
     uart_write_bytes(ESP_UART_NUM, buf, len);
     return len;   //TODO: implement arduino send
   }
