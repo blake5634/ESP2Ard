@@ -42,29 +42,33 @@ void loop() {
   //
   //   Check the serial port for data from ESP32
   //
-  nrcvd = EA_get_packet_serial(packet);
-  if (nrcvd == ESP32Ard_timeout_error) {
-    Serial.println(" serial port timed out");
+  while((nrcvd = EA_get_packet_serial(packet, ESP32Ard_timeout_delay_ms) ) == ESP32Ard_timeout_error)
+   {
+    EA_log(" packet timeout ... will try again in 1500 msec");
+    EA_delay_ms(1500);
     }
-  else if (nrcvd > 0) {
+  if (nrcvd > 0){
+    char msg[100] = {0};
+    sprintf(msg, "got packet: nrcvd: %d\n",nrcvd);
+    EA_log(msg);
     ercd = EA_test_packet(packet);
     if (ercd < 0){
-       Serial.print(" bad packet received: code, n:");
-       Serial.print(ercd);
-       Serial.print(" ");
-       Serial.println(nrcvd);
+        Serial.print(" bad packet received: code, n:");
+        Serial.print(ercd);
+        Serial.print(" ");
+        Serial.println(nrcvd);
     }
     else {Serial.print("No packet errors!! ");
       Serial.print(nrcvd);
       Serial.println(" bytes"); }
 
-#define ESP2Ard_DEBUG
-#if defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
-//
-// some debug options for viewing received packets:
-//
-#define OPTION1  1
-// #define OPTION2  2
+  #define ESP2Ard_DEBUG
+  #if defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
+  //
+  // some debug options for viewing received packets:
+  //
+  #define OPTION1  1
+  // #define OPTION2  2
 
   // 1 print it out raw byte by raw byte
   #ifdef OPTION1
@@ -80,13 +84,13 @@ void loop() {
       Serial.print("] ");
       }
     Serial.println("");
-    Serial.println("-------"); 
+    Serial.println("-------");
   #endif
   #ifdef OPTION2
   char* message = packet+3; // start of data
   Serial.println(message);
   #endif
-#endif //defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
+  #endif //defined(ESP2Ard_DEBUG) && defined(ARDUINO_PLATFORM)
     //
     // unpack the data packet
     //
@@ -97,9 +101,9 @@ void loop() {
     int eof = packet[nrcvd-1];
     Serial.println(sprintf("cnt: %d chsum: %d", charcnt, cksum));
     Serial.println(packet[3]);
-   // Serial.println(sprintf("cnt: %d hour: %d min: %d  chsum: %d", charcnt, hour, minute, cksum));
+    // Serial.println(sprintf("cnt: %d hour: %d min: %d  chsum: %d", charcnt, hour, minute, cksum));
     //#define TimeSetApp
-#ifdef TimeSetApp
+  #ifdef TimeSetApp
     Serial.print("The Time Set app itself: \n cnt:");
     Serial.print(charcnt);
     Serial.print("  hour:");
@@ -108,15 +112,15 @@ void loop() {
     Serial.print(minute);
     Serial.print("  cksum(HEX):");
     Serial.print(cksum,HEX);
-    Serial.println(""); 
-#endif
+    Serial.println("");
+  #endif
     for (int i=0;i<ESP32Ard_max_packet_size;i++){  // clear the pkt buffer to prevent logic breaks.
       packet[i] = 0;
-    }
-  }
+     }
+  } // end of valid packet processing
 
   digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(225);        // delay xx ms in between reads for stability
+  delay(200);        // delay xx ms in between reads for stability
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-  delay(225);        // delay xx ms in between reads for stability
+  delay(200);        // delay xx ms in between reads for stability
 }
