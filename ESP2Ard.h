@@ -103,7 +103,7 @@ typedef   byte  EA_msg_byte;
 #define TAG "ESP2Ard message:"  // used for logging
 
 typedef   unsigned char  EA_msg_byte;
-
+typedef   EA_msg_byte     byte;  // this is an Arduino type
 #endif
 
 #if defined(ESP32_Arduino_PLATFORM)
