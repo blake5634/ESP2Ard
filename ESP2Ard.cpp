@@ -25,26 +25,33 @@
 #ifdef ARDUINO_SW_SERIAL
 
 #include <SoftwareSerial.h>
-SoftwareSerial* gSwSerialptr;  // place to setup SwSerial object
+SoftwareSerial* gSwSerialc_index;  // place to setup SwSerial object
 
 //ARDUINO_SW_SERIAL
 void EA_init_serial(int rcv, int tx){
     static SoftwareSerial sws(rcv,tx);
     sws.begin(ESP2Ard_BaudRate);
     EA_log("... sw serial initialized ");
-    gSwSerialptr = &sws;
+    gSwSerialc_index = &sws;
     return NULL ;
   }
 
 //ARDUINO_SW_SERIAL
-int EA_available(){
-    int x = gSwSerialptr->available();
-    return x;
-  }
+//   NOT needed with new state machine(?)
+// int EA_available(){
+//     int x = gSwSerialc_index->available();
+//     return x;
+//   }
 
 //ARDUINO_SW_SERIAL
-char EA_read(){
-    return gSwSerialptr->read();
+// new EA_read prototype to allow for return status
+int EA_read(char* c_index){
+    if (gSwSerialc_index->available()==0) {
+      *c_index = NULL;
+      return 0; }
+    else {
+      *c_index = gSwSerialc_index->read();
+      return 1; }
     }
 
 int EA_write(){
@@ -83,8 +90,8 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   }
   else {
     char msg[100];
-    EA_log("Error found by EA_test_packet()(ESP_AIDE)");
-    sprintf(msg, "EA_write_pkt_serial(): trying to send a bad backet: error: %d (ESP_AIDE)",code);
+    EA_log("somethings wrong with uart_write_bytes");
+    sprintf(msg, "EA_write_pkt_serial(): trying to send a bad backet: error: %d",code);
     EA_log(msg);
     return 0;
   }
@@ -176,9 +183,77 @@ int EA_write_pkt_serial(EA_msg_byte* buf, int len){
 
 
 
-
-
+///////////////////////////////////////////////////////////////
 //  Platform agnostic functions
+//
+
+//
+// state machine for receiving packets:
+//
+//   returns pkt length >0 when packet complete
+//   otherwise returns state:
+//
+//    State         Function
+//      -1          waiting for start (0xFF)
+//      -2          check 2nd start of pkt byte (0x00)
+//      -3          accumulate sent value of byte count
+//      -4          accumulate payload until all bytes rcvd.
+//
+int state_machine(char c, char* buf){
+  static int rcv_state = -1;
+  static int c_index = 0;
+  static int byte_cnt = 0;  // packet byte count from msg
+  static int bc = 0; // actual byte count
+  switch (rcv_state){
+    case -1:
+      if(c==(char)0xFF) { // start of packet flag= 0xFF
+        rcv_state = -2;
+        buf[c_index++] = c;
+      }
+      else {
+        rcv_state = -1; // stay
+      }
+      return -1;
+
+    case -2:
+      if(c==0) { // 2nd start of pkt flag = 0
+        rcv_state = -3;
+        buf[c_index++] = c;
+      }
+      else {
+        c_index = 0;
+        rcv_state = -1; // not true pkt start, go back
+      }
+      return -2;
+
+    case -3:
+      byte_cnt = (int) c;  // next is payload byte count
+      buf[c_index++] = c;
+      bc = 0;
+      rcv_state = -4;
+      return -3;
+
+    case -4:
+      buf[c_index++] = c;
+      bc++;
+      char msg[100] = {0};
+      sprintf(msg, "state -4: c: %x, bc: %d, byte_cnt: %d\n", c, bc, byte_cnt);
+      EA_log(msg);
+      // byte_count, computed by sender, does not include FF, 00, cksum and EOP
+      if (bc == byte_cnt+2){ // account for cksum byte and  packet-close byte (0xA)
+        buf[c_index] = 0xA; // HACK
+        rcv_state = -1;
+        c_index = 0;  // we're getting ready for a new packet
+        return bc+3; // total packet len: (bc + {FF, 00})
+      }
+      else {
+        rcv_state = -4;
+      }
+      return -4;
+  }
+  EA_log("State Machine Error - should never get here");
+}
+
 
 void EA_delay_ms(int dms){
 #if defined(ARDUINO_PLATFORM) || defined(ESP32_Arduino_PLATFORM)
@@ -190,6 +265,8 @@ void EA_delay_ms(int dms){
 #endif
 }
 
+
+/*   OLD
 int EA_get_packet_serial(EA_msg_byte* buf){
   int pidx = 0;
   char c = ' ';
@@ -213,19 +290,44 @@ int EA_get_packet_serial(EA_msg_byte* buf){
         Serial.print(",  ");
         Serial.print((char)rep);  // print it if printable
         Serial.println("");
-#endif
-        if (c == '\n')  break; // == 0xA
-        pidx++;
-      if (c == '\n') break; // 0xA == end of message
-      EA_delay_ms(1);
-    } // end of message
-    if (timeoutms <= 0) { pidx = 0; break;}
+  #endif
+        if (c == '\n') {// 0xA == end of message
+            return pidx+1;
+            }
+      if (EA_available()== 0) EA_delay_ms(1);
+    } // end of available bytes while() loop
+  Serial.println(" --- end of msg ----");
+  if (timeoutms <= 0) {  // waited too long to receive
+        return ESP32Ard_timeout_error;  // approx timeoutms ms.
+        }
+} // end of function
+*/
+
+
+int EA_get_packet_serial(EA_msg_byte* buf, int timeout){
+  int tout = timeout;
+  int c_index = 0;
+  int smreturn = 0;
+  char c;
+  char *datac_index = &c;
+  while(1){
+    while(EA_read(datac_index)==0) {
+      tout--;
+      if (tout < 0) return ESP32Ard_timeout_error;
+      delay(1);} // wait for data
+    // now a byte has arrived
+    smreturn = state_machine(c, buf );
+    char msg[100] = {0};
+    if (smreturn > 0) { // we got a full packet in the buffer
+        return smreturn;
+        }
     else {
-      timeoutms = ESP32Ard_timeout_delay_ms; // reset timout timer
-      return pidx;  // num of bytes read
-      }
+      sprintf(msg, "in state: %d  char2: %x\n",smreturn, c);
+      EA_log(msg);}
+    delay(1);
+    tout--;
+    if (tout < 0) return ESP32Ard_timeout_error;
   }
-  return ESP32Ard_timeout_error;  // approx timeoutms ms.
 }
 
 EA_msg_byte* EA_msg_make(const char* str){
