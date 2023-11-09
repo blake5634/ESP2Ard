@@ -84,7 +84,7 @@ char EA_read(){
 int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   int code = EA_test_packet(buf);
   if (code == ESP32Ard_packet_check_OK){
-    EA_log("packet checked out.. sending");
+ //   EA_log("packet checked out.. sending(write_pkt_serial)(ESP_AIDE)");
     Serial2.write(buf, len);
     return len;
   }
@@ -165,7 +165,7 @@ char EA_read(){
 int EA_write_pkt_serial(EA_msg_byte* buf, int len){
   int code = EA_test_packet(buf);
   if (code == ESP32Ard_packet_check_OK){
-    EA_log("packet checked out.. sending");
+  //  EA_log("packet checked out.. sending(write_pkt_serial/ESP32)");
     uart_write_bytes(ESP_UART_NUM, buf, len);
     return len;   //TODO: implement arduino send
   }
@@ -270,23 +270,17 @@ void EA_delay_ms(int dms){
 int EA_get_packet_serial(EA_msg_byte* buf){
   int pidx = 0;
   char c = ' ';
-  pidx = -1;
+  pidx = 0;
   int timeoutms = ESP32Ard_timeout_delay_ms;
-  while (EA_available()  == 0 ) { // wait for a packet
-      timeoutms--; timeoutms--;
-      if timeoutms < 0)  return ESP32Ard_timeout_error;
-      delay(2);
-      }
-  // we have a byte!
-  c = EA_read();
-  while (1) {
-      if (c == 0xFF){  // we have start of packet
-        pidx++;
-        if (EA_available() < 1)
+  while(1){
+    timeoutms--;
+    if (EA_available()  == 0 )  return 0;
+   // Serial.print("\n");
+    while (EA_available() > 0) {
         c = EA_read();
         buf[pidx] = c;
-  #if   defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
-    //   Serial.println( sprintf(">> %d, %c", pidx, packet[pidx]) );
+#if   defined(ARDUINO_PLATFORM) && defined(ESP2Ard_DEBUG)
+   //   Serial.println( sprintf(">> %d, %c", pidx, packet[pidx]) );
         Serial.print(">> ");
         Serial.print(pidx);
         Serial.print("  ");

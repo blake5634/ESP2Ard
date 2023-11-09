@@ -136,7 +136,7 @@ int  EA_available();
 void EA_delay_ms(int dms);
 char EA_read();
 char EA_write_buffer(EA_msg_byte* buf, int len);
-int  EA_get_packet_serial(EA_msg_byte* buf);
+int  EA_get_packet_serial(EA_msg_byte* buf, int timeout);
 int  EA_test_packet(EA_msg_byte* pkt);
 int  EA_pkt_build(EA_msg_byte* pkt,int pll, EA_msg_byte* payload);
 int  EA_write_pkt_serial(EA_msg_byte* pkt, int len);

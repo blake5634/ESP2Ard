@@ -58,8 +58,11 @@ static void wifi_scan(void)
         ESP_LOGI(TAG, "Channel \t\t%d", ap_info[i].primary);
         //  Send it !
         sprintf(msg, "%40s   chan: %d", ap_info[i].ssid, ap_info[i].primary);
-        plen = EA_msg_pkt_build(pkt, msg);
-        EA_write_pkt_serial(pkt, plen);
+//         plen = EA_msg_pkt_build(pkt, msg);
+        int paylen = strlen(msg);
+        int pktLen = paylen+ESP2Ard_OVERHEAD_BYTES;
+        EA_pkt_build(pkt, paylen, msg);
+        EA_write_pkt_serial(pkt, pktLen);
         //
     }
 
